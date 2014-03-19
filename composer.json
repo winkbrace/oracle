@@ -1,5 +1,6 @@
 {
     "name": "winkbrace/oracle",
+    "description": "Complete library for interacting with Oracle databases",
     "authors": [
         {
             "name": "Bas de Ruiter",
