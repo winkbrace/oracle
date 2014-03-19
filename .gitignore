@@ -1,0 +1,9 @@
+.idea
+vendor/*
+Oracle/Log/WebQueryLog.php
+tests/_log/*
+tests/unit/resources/FileWriterTest*
+
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/

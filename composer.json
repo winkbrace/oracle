@@ -1,0 +1,29 @@
+{
+    "name": "winkbrace/oracle",
+    "authors": [
+        {
+            "name": "Bas de Ruiter",
+            "email": "winkbrace@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "illuminate/support": "4.1.*"
+    },
+    "require-dev": {
+        "mockery/mockery": "0.9.*",
+        "codeception/codeception": "~1.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "Oracle\\": "Oracle/"
+        },
+        "files": [
+            "functions.php"
+        ],
+        "classmap": [
+            "Query.php"
+        ]
+    },
+    "minimum-stability": "dev"
+}

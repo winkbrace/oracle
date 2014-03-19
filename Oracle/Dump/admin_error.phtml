@@ -1,0 +1,17 @@
+<div class="error">
+    <span style="float: right; cursor: pointer;" onclick="javascript:document.getElementById('{id}').style.display = 'block';">show sql</span>
+
+    {error_message} <br/>
+    {known_error_message}
+
+    <span id="{id}">
+        {sql}
+
+        {binds}
+    </span>
+
+    <script type="text/javascript">
+        // initially hide query details
+        document.getElementById('{id}').style.display = 'none';
+    </script>
+</div>
