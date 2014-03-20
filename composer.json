@@ -24,7 +24,7 @@
             "functions.php"
         ],
         "classmap": [
-            "Query.php"
+            "QueryAdapter.php"
         ]
     },
     "minimum-stability": "dev"
