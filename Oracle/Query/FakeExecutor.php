@@ -10,9 +10,6 @@ class FakeExecutor extends Executor
 {
     public function execute($commit = self::COMMIT)
     {
-        if ($this->statement->getStatementType() != 'SELECT')
-            throw new \Exception('Can only fake execution of SELECT statements.');
-
         if (! $this->isExecuted)
             $this->isExecuted = $this->statement->validateSqlSyntax();
 
