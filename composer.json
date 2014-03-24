@@ -21,7 +21,8 @@
             "Oracle\\": "Oracle/"
         },
         "files": [
-            "functions.php"
+            "functions.php",
+            "bootstrap.php"
         ],
         "classmap": [
             "QueryAdapter.php"
