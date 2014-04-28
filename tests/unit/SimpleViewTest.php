@@ -35,11 +35,11 @@ class SimpleViewTest extends PHPUnit_Framework_TestCase
     public function testRenderWithTooManyVariables()
     {
         $data = array(
-            'name' => 'WinkBrace',
+            'name' => 'Bas',
             'title' => 'Master of the Universe',
         );
         $view = new SimpleView($this->template, $data);
         $actual = $view->render();
-        $this->assertEquals('Hello, WinkBrace', $actual);
+        $this->assertEquals('Hello, Bas', $actual);
     }
 }

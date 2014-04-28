@@ -2,6 +2,7 @@
 
 use Oracle\OracleException;
 use Oracle\Result\Result;
+use Oracle\Result\Row;
 
 /**
  * Class Pivot
@@ -27,6 +28,8 @@ class Pivoter
     protected $rowIdentifiers = array();
     /** @var bool */
     protected $sortByFirstColumn = true;
+    /** @var bool */
+    protected $sortByColumnHeader = true;
 
     /**
      * @param Result $result
@@ -88,10 +91,10 @@ class Pivoter
 
     /**
      * Glue all row headers together as row identifier to be able to treat them as one field
-     * @param array $row
+     * @param \Oracle\Result\Row $row
      * @return string
      */
-    protected function createRowIdentifier(array $row)
+    protected function createRowIdentifier(Row $row)
     {
         $rowFields = array();
 
@@ -134,7 +137,9 @@ class Pivoter
      */
     protected function sortPivotOutput()
     {
-        ksort($this->pivot);
+        if ($this->sortByColumnHeader) {
+            ksort($this->pivot);
+        }
         if ($this->sortByFirstColumn)
         {
             ksort($this->rowIdentifiers);
@@ -175,7 +180,11 @@ class Pivoter
      */
     public function setSortByFirstColumn($sortByFirstRow)
     {
-        $this->sortByFirstColumn = $sortByFirstRow;
+        $this->sortByFirstColumn = (bool) $sortByFirstRow;
     }
 
+    public function setSortByColumnHeader($sortByColumnHeader)
+    {
+        $this->sortByColumnHeader = (bool) $sortByColumnHeader;
+    }
 }

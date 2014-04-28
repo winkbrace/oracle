@@ -64,17 +64,17 @@ class ExecutorTest extends PHPUnit_Framework_TestCase
      * Example: you could have :reseller or :resellersoort, and only :resellersoort is in the query
      * We don't want to attempt to bind :reseller in this case
      * I copied this test from BinderTest, because I absolutely want to make sure the query executes as expected
-     * @group database
      */
     public function testOverlappingBindVariableNames()
     {
         $sql = "select *
-                from   test
-                where  id = :identifier";
-        $statement = new Statement($sql, new Connection());
+                from   dm_resellers r
+                join   dm_resellersoort rs on r.soortcode = rs.soortcode
+                where  rs.soortcode = :resellersoort";
+        $statement = new Statement($sql, new Connection('dm'));
         $statement->bind(array(
-            ':id' => 'ACME',
-            ':identifier' => 1,
+            ':reseller' => 'Tele2',
+            ':resellersoort' => 1,
         ));
         $result = $statement->execute();
         $this->assertTrue($result);

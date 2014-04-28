@@ -17,7 +17,7 @@ class Fetcher
     /** @var Result */
     protected $result;
     /** @var int */
-    protected $numFields;
+    protected $numFields = 0;
     /** @var array */
     protected $columnNames = array();
     /** @var array */
@@ -25,7 +25,7 @@ class Fetcher
     /** @var string */
     protected $dateFormat = 'd-m-Y H:i:s';
     /** @var int */
-    protected $numRows;
+    protected $numRows = 0;
     /** @var string */
     protected $firstValue = false;
     /** @var array */
@@ -88,11 +88,12 @@ class Fetcher
         // this way we will never run into the situation that we already fetched the first value and overwrite it
         if ($this->firstValue === false)
         {
-            if ($row = $this->fetch(self::FETCH_BOTH))
-            {
-                $column = $column ?: 0;
+            $column = $column ?: 0;
+
+            $row = (! empty($this->result)) ? $this->result[0] : $this->fetch(self::FETCH_BOTH);
+
+            if (! empty($row))
                 $this->firstValue = $row[$column];
-            }
         }
 
         return $this->firstValue;
@@ -146,6 +147,8 @@ class Fetcher
         $fetched = oci_fetch_array($this->statement->getResource(), $flag);
         if (! $fetched)
             return false;
+
+        $this->numRows++;
 
         return $this->formatDates(new Row($fetched), $type);
     }
@@ -335,35 +338,15 @@ class Fetcher
     protected function setNumRows()
     {
         // oci_num_rows will return the number of fetched rows so far for a SELECT statement
-        if ($this->statement->getStatementType() != 'SELECT')
+        // for all other query types this is fine
+        // If the user has fetched records in a while loop, the num rows will be the amount of rows fetched so far.
+        // When the user hasn't fetched anything yet, we will fetch the complete result and return the count.
+        $this->numRows = oci_num_rows($this->statement->getResource());
+
+        if ($this->statement->getStatementType() == 'SELECT' && empty($this->numRows))
         {
-            $this->numRows = oci_num_rows($this->statement->getResource());
-        }
-        elseif (! empty($this->result))
-        {
+            $this->fetchAll(); // unlike fetchResult, this will only fetch the result when result is empty
             $this->numRows = $this->result->count();
-        }
-        else
-        {
-            $sql = "select count(*) as num_rows
-                    from
-                    (
-                        ".$this->statement->getSql()."
-                    )";
-            $parsed = oci_parse($this->statement->getConnectionResource(), $sql);
-
-            if (! empty($this->bindVariables))
-            {
-                foreach ($this->bindVariables as $bind => $name)
-                    oci_bind_by_name($parsed, $bind, $name);
-            }
-
-            oci_define_by_name($parsed, "NUM_ROWS", $numRows);
-            oci_execute($parsed);
-            oci_fetch($parsed);
-            oci_free_statement($parsed);
-
-            $this->numRows = (int) $numRows;
         }
     }
 }

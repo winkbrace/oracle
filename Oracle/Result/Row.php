@@ -9,6 +9,19 @@ use Oracle\Support\ObjectAccess;
  */
 class Row extends Collection implements ObjectAccess
 {
+
+    /**
+     * Creates a new Row
+     *
+     * @see \Illuminate\Support\Collection::__construct()
+     * @param array $items
+     * @return void
+     */
+    public function __construct(array $items = array())
+    {
+        parent::__construct(array_change_key_case($items, CASE_UPPER));
+    }
+
     /**
      * Get an item from the collection by key.
      *
@@ -51,6 +64,23 @@ class Row extends Collection implements ObjectAccess
     public function __set($key, $value)
     {
         $this->put($key, $value);
+    }
+
+    /**
+     * @param string $key
+     * @return bool
+     */
+    public function __isset($key)
+    {
+        return isset($this->items[strtoupper($key)]);
+    }
+
+    /**
+     * @param string $key
+     */
+    public function __unset($key)
+    {
+        unset($this->items[strtoupper($key)]);
     }
 
 // ArrayAccess //////////////////////////////////////////////////

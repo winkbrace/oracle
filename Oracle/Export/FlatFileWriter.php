@@ -1,5 +1,7 @@
 <?php namespace Oracle\Export;
 
+use Oracle\OracleException;
+
 /**
  * Class FlatFile
  * @package Oracle\Export
@@ -61,6 +63,9 @@ class FlatFileWriter
     protected function startFile()
     {
         $this->handle = fopen($this->filename, $this->fileWriteMode);
+        if (! is_resource($this->handle))
+            throw new OracleException("Can't open file '".$this->filename."' for writing.");
+
         $this->writeHeadersIfRequired();
     }
 

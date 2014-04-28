@@ -1,6 +1,7 @@
 .idea
+nbproject
+composer.lock
 vendor/*
-Oracle/Log/WebQueryLog.php
 tests/_log/*
 tests/unit/resources/FileWriterTest*
 

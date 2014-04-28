@@ -9,7 +9,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         $credentials = Config::get('credentials');
         $this->assertTrue(is_array($credentials));
         $this->assertNotEmpty($credentials);
-        $this->assertArrayHasKey('XE', $credentials);
+        $this->assertArrayHasKey('MARPRD', $credentials);
     }
 
     /**

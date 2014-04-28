@@ -10,7 +10,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->conn = new Connection();
+        $this->conn = new Connection('TEST', 'MARPRD');
     }
 
     public function tearDown()
@@ -60,10 +60,9 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
     public function testIndifferentConnectionNames()
     {
-        $database = strtolower(Config::get('default_database'));
-        $conn = new Connection('test', $database);
+        $conn = new Connection('test', 'marprd');
         $this->assertEquals('test', $conn->getSchema());
-        $this->assertEquals($database, $conn->getDatabase());
+        $this->assertEquals('marprd', $conn->getDatabase());
 
         $resource = $conn->getResource();
         $this->assertTrue(is_resource($resource));

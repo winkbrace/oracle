@@ -28,7 +28,7 @@ class FusionCharter
      * @param string $xCategoriesColumn column containing the x categories
      * @param array $yCategoriesColumns list of columns that are the y categories
      *
-     * @return array($data, $xCategories, $result)
+     * @return array($data, $xCategories)
      */
     public function toFusionChartsArrayX($xCategoriesColumn, array $yCategoriesColumns)
     {
@@ -139,7 +139,7 @@ class FusionCharter
                 $cat = array();
                 foreach ($yCategoriesColumns as $ycol)
                     $cat[] = $row[$ycol];
-                $cat[] = initcap($col);
+                $cat[] = ucfirst(strtolower($col));
                 $ycat = implode(' ', $cat);
 
                 // collect value in categories array

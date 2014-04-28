@@ -91,7 +91,7 @@ class BinderTest extends PHPUnit_Framework_TestCase
         $statement = new Statement($sql, $this->connection);
         $binder = new Binder($statement);
         $binder->bind(array(
-            ':reseller' => 'ACME',
+            ':reseller' => 'Tele2',
             ':resellersoort' => 1,
         ));
         $this->assertEquals(':resellersoort => 1', trim($binder->toStringBindVariables()));
@@ -107,10 +107,10 @@ class BinderTest extends PHPUnit_Framework_TestCase
         $statement = new Statement($sql, $this->connection);
         $binder = new Binder($statement);
         $binder->bind(array(
-            ':reseller' => 'ACME',
+            ':reseller' => 'Tele2',
             ':resellersoort' => 1,
         ));
-        $this->assertEquals(':reseller => ACME'."\n".':resellersoort => 1', trim($binder->toStringBindVariables()));
+        $this->assertEquals(':reseller => Tele2'."\n".':resellersoort => 1', trim($binder->toStringBindVariables()));
     }
 
     public function testSqlWithoutBindVariables()
@@ -121,7 +121,7 @@ class BinderTest extends PHPUnit_Framework_TestCase
         $statement = new Statement($sql, $this->connection);
         $binder = new Binder($statement);
         $binder->bind(array(
-            ':reseller' => 'ACME',
+            ':reseller' => 'Tele2',
             ':resellersoort' => 1,
         ));
         $this->assertEmpty($binder->getBindVariables());
@@ -129,20 +129,22 @@ class BinderTest extends PHPUnit_Framework_TestCase
 
     public function testNonWordCharactersImmediatelyFollowingTheBindVariable()
     {
-        $sql = "select *
-                from   test
-                where  id > :id
+        $sql = "select zo.productmix
+                from   dm_zon_orders zo
+                where  zo.usr_cust_nr = :usr_cust_nr-1
+                and    trunc(zo.requestdate) = to_date(:requestdate, 'dd-mm-yyyy')
                 and    :nr=3
                 and    2=:two";  // no nextChar
         $statement = new Statement($sql, $this->connection);
         $binder = new Binder($statement);
         $binder->bind(array(
-            ':id' => 2,
+            ':usr_cust_nr' => 2876260,
+            ':requestdate' => '23-05-2012',
             ':nr' => 3,
             ':two' => 2,
         ));
         $this->assertEquals(
-            ':id => 2'."\n".':nr => 3'."\n".':two => 2',
+            ':usr_cust_nr => 2876260'."\n".':requestdate => 23-05-2012'."\n".':nr => 3'."\n".':two => 2',
             trim($binder->toStringBindVariables())
         );
     }

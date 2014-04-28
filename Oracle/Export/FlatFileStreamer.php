@@ -26,9 +26,11 @@ class FlatFileStreamer extends DataStreamer
 
         $this->separatorsPerType = array(
             'txt' => "\t",
+            'tab' => "\t",
             'csv' => ',',
             'psv' => '|',
             'tsv' => '~',
+            'dat' => ';',
         );
     }
 
@@ -106,7 +108,7 @@ class FlatFileStreamer extends DataStreamer
     public function setType($type)
     {
         $type = strtolower($type);
-        if (! in_array($type, array("txt", "psv", "csv", "tsv")))
+        if (! array_key_exists($type, $this->separatorsPerType))
             throw new \InvalidArgumentException('Unknown file extension requested.');
 
         $this->type = $type;

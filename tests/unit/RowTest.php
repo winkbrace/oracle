@@ -47,4 +47,29 @@ class RowTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('one', $this->row->foo);
         $this->assertEquals('one', $this->row->FOO);
     }
+
+    public function testUseInArrayFunction()
+    {
+        $this->row->foo = 'one';
+        $this->row->bar = null;
+
+        $actual = array_filter($this->row->toArray());
+        $expected = array('FOO' => 'one');
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testSetValue()
+    {
+        // in the php docs I read something about having to implement __get by reference &__get.
+        // This tests asserts that that is not true.
+
+        $class = new StdClass();
+        $class->row = new Row();
+        $class->row['foo'] = 'one';
+        $class->row['bar'] = 'two';
+        $class->row['foo'] = 'three';
+
+        $expected = array('FOO' => 'three', 'BAR' => 'two');
+        $this->assertEquals($expected, $class->row->toArray());
+    }
 }

@@ -13,10 +13,8 @@ class Connection
 {
     /** database connection resource */
     protected $resource;
-
     /** @var string */
     protected $schema;
-
     /** @var string */
     protected $database;
 
@@ -57,10 +55,10 @@ class Connection
         $database = strtoupper($this->database);
 
         $credentials = new Collection(Config::get('credentials'));
-        $users = new Collection($credentials->get($database));
+        $users       = new Collection($credentials->get($database));
         $connections = new Collection(Config::get('connections'));
 
-        $password = $users->get($schema);
+        $password   = $users->get($schema);
         $connection = $connections->get($database);
 
         $this->resource = oci_connect($schema, $password, $connection, 'UTF8');
@@ -99,7 +97,9 @@ class Connection
      */
     public function __destruct()
     {
-        @oci_close($this->resource);
+        if (is_resource($this->resource))
+            oci_close($this->resource);
+
         unset($this->resource);
     }
 }

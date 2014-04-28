@@ -1,6 +1,7 @@
 <?php
 
 use Oracle\Connection;
+use Oracle\Query\Binder;
 use Oracle\Query\Fetcher;
 use Oracle\Query\Statement;
 
@@ -143,6 +144,35 @@ class FetcherTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(2, $fetcher->getNumRows());
     }
 
+    public function testGetNumRowsWithZeroRows()
+    {
+        $statement = new Statement("select 1 from dual where 1 = 2", new Connection('test'));
+        $fetcher = new Fetcher($statement);
+        $this->assertSame(0, $fetcher->getNumRows());
+    }
+
+    public function testGetNumRowsWithBinds()
+    {
+        $statement = new Statement("select * from test where id in (:foo, :bar)", new Connection('test'));
+        $binder = new \Oracle\Query\Binder($statement);
+        $binder->bind(array(':foo' => 2, ':bar' => 4));
+        $fetcher = new Fetcher($statement);
+        $this->assertEquals(2, $fetcher->getNumRows());
+    }
+
+    public function testNumRowsAfterFetch()
+    {
+        $this->fetcher->fetch();
+        $this->assertEquals(1, $this->fetcher->getNumRows());
+    }
+
+    public function testNumRowsAfterFetchLoop()
+    {
+        while($this->fetcher->fetch())
+            ;
+        $this->assertEquals(4, $this->fetcher->getNumRows());
+    }
+
     public function testFetchFirstValue()
     {
         $id = $this->fetcher->fetchFirstValue();
@@ -155,6 +185,17 @@ class FetcherTest extends PHPUnit_Framework_TestCase
     public function testFetchFirstValueByColumn()
     {
         $value = $this->fetcher->fetchFirstValue('VALUE');
+        $this->assertEquals('hello, world', $value);
+    }
+
+    public function testFetchFirstValueAfterNumRowsWithBinds()
+    {
+        $statement = new Statement("select * from test where id in (:one, :two) order by id", new Connection('test'));
+        $binder = new Binder($statement);
+        $binder->bind(array(':one' => 1, ':two' => 2));
+        $fetcher = new Fetcher($statement);
+        $fetcher->getNumRows();
+        $value = $fetcher->fetchFirstValue('VALUE');
         $this->assertEquals('hello, world', $value);
     }
 
@@ -184,6 +225,46 @@ class FetcherTest extends PHPUnit_Framework_TestCase
         $actual = $this->fetcher->fetchColumn('id');
         $expected = array(1, 2, 3, 4);
         $this->assertEquals($expected, $actual);
+    }
+
+    public function testFetchAliasedColumnValue()
+    {
+        $sql = 'select  1 * 1 "first column"
+                ,       2 * 2 as "second column"
+                ,       3 * 3 as "third_column"
+                ,       4 * 4 fourth_column
+                ,       5 * 5 as sixth_column
+                from    dual';
+        $statement = new Statement($sql, new Connection('test'));
+        $fetcher = new Fetcher($statement);
+
+        $row = $fetcher->fetch();
+
+        $expectedArray = array(
+            'FIRST COLUMN'  => 1,
+            'SECOND COLUMN' => 4,
+            'THIRD_COLUMN'  => 9,
+            'FOURTH_COLUMN' => 16,
+            'SIXTH_COLUMN'  => 25,
+        );
+
+        // assert that the array is the same
+        // TRUE if expected and actual array have the same key/value pairs
+        $this->assertTrue($expectedArray == $row->toArray());
+
+        // assert that values can be fetched by column name in lowercase
+        foreach ($expectedArray as $column => $expected)
+        {
+            $actual = $row[strtolower($column)];
+            $this->assertEquals($expected, $actual);
+        }
+
+        // assert that values can be fetched by column name in uppercase
+        foreach ($expectedArray as $column => $expected)
+        {
+            $actual = $row[strtoupper($column)];
+            $this->assertEquals($expected, $actual);
+        }
     }
 
     public function testFetchColumnWithoutArgument()

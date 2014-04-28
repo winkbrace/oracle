@@ -7,6 +7,7 @@ use Oracle\Output\Inverter;
 use Oracle\Output\Pivoter;
 use Oracle\Query\Binder;
 use Oracle\Query\Executor;
+use Oracle\Query\FakeExecutor;
 use Oracle\Query\Fetcher;
 use Oracle\Query\Statement;
 use Oracle\Result\Result;
@@ -55,6 +56,17 @@ class LazyLoader
     {
         if (is_null($this->executor))
             $this->executor = new Executor($this->statement);
+
+        return $this->executor;
+    }
+
+    /**
+     * @return FakeExecutor
+     */
+    public function loadFakeExecutor()
+    {
+        if (is_null($this->executor) || ! $this->executor instanceof FakeExecutor)
+            $this->executor = new FakeExecutor($this->statement);
 
         return $this->executor;
     }
