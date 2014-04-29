@@ -17,6 +17,8 @@ class FlatFileWriter
     protected $streamer;
     /** @var bool */
     protected $showHeaders = true;
+    /** @var array */
+    protected $filenames = array();
     /** @var string */
     protected $filename;
     /** @var string */
@@ -65,6 +67,8 @@ class FlatFileWriter
         $this->handle = fopen($this->filename, $this->fileWriteMode);
         if (! is_resource($this->handle))
             throw new OracleException("Can't open file '".$this->filename."' for writing.");
+
+        $this->filenames[] = $this->filename;
 
         $this->writeHeadersIfRequired();
     }
@@ -152,6 +156,14 @@ class FlatFileWriter
     public function setShowHeaders($showHeaders)
     {
         $this->showHeaders = (bool) $showHeaders;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFileNames()
+    {
+        return $this->filenames;
     }
 
     public function __destroy()
